@@ -223,7 +223,7 @@ else:
 # Grab our data
 for row in SAVED_update_result:
     data_id = row[0]
-    data_name = row [1]
+    data_name = row[1]
     data_isActive = row[2]
     data_loadOrder = row[3]
 
@@ -243,5 +243,46 @@ newconn = sqlite3.connect(new_path)
 newcon_result = newconn.execute("SELECT * FROM PLAYSETS")
 print("\n---[AFTER DEALING WITH UPDATE]---")
 for row in newcon_result:
-    print(row)
+    print(row[0])
 newconn.close()
+
+# grab base playset mods
+print("\n---[Playset Mod Base]---")
+baseconn = sqlite3.connect(base_path)
+base_playset_mods_result = baseconn.execute("SELECT * FROM playsets_mods")
+SAVED_base_playset_mods_result = []
+for row in base_playset_mods_result:
+    SAVED_base_playset_mods_result.append(row)
+baseconn.close() # Close to save memory
+
+# Print the update
+print("\n---[Playset Mod Update]---")
+updateconn = sqlite3.connect(update_path)
+update_result = updateconn.execute("SELECT * FROM playsets_mods")
+SAVED_update_playset_mods_result = []
+for row in update_result:
+    SAVED_update_playset_mods_result.append(row)
+updateconn.close() # Close to save memory
+
+
+# Now lets make sure we have all the playset mods
+newconn = sqlite3.connect(new_path)
+for row in SAVED_update_playset_mods_result:
+    if row not in SAVED_base_playset_mods_result:
+        print("new mod")
+        print(row)
+
+        playsetid = row[0]
+        modid = row[1]
+        position = row[2]
+        enabled = row[3]
+
+        
+        
+        updated = newconn.execute(f"INSERT INTO playsets_mods (playsetid, modid, position, enabled) VALUES ('{playsetid}', '{modid}', '{position}', '{enabled}')")
+
+newconn.commit()
+newconn.close()                   
+                
+
+print("\n DONE ")
