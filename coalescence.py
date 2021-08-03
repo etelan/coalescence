@@ -266,23 +266,86 @@ updateconn.close() # Close to save memory
 
 
 # Now lets make sure we have all the playset mods
+modids = []
 newconn = sqlite3.connect(new_path)
 for row in SAVED_update_playset_mods_result:
     if row not in SAVED_base_playset_mods_result:
-        print("new mod")
-        print(row)
-
+   
         playsetid = row[0]
         modid = row[1]
         position = row[2]
         enabled = row[3]
 
-        
+        modids.append(modid)
         
         updated = newconn.execute(f"INSERT INTO playsets_mods (playsetid, modid, position, enabled) VALUES ('{playsetid}', '{modid}', '{position}', '{enabled}')")
 
 newconn.commit()
-newconn.close()                   
-                
+newconn.close()
 
-print("\n DONE ")
+print("\n DONE PLAYLIST MODS ")
+
+# grab base playset mods
+print("\n---[Mod Base]---")
+baseconn = sqlite3.connect(base_path)
+base_result = baseconn.execute("SELECT * FROM mods")
+SAVED_base_mods_result = []
+for row in base_result:
+    SAVED_base_mods_result.append(row)
+baseconn.close() # Close to save memory
+
+# Print the update
+print("\n---[Mod Update]---")
+updateconn = sqlite3.connect(update_path)
+update_result = updateconn.execute("SELECT * FROM mods")
+SAVED_update_mods_result = []
+
+for row in update_result:
+    SAVED_update_mods_result.append(row)
+updateconn.close() # Close to save memory
+
+# Now lets make sure we have all the playset mods
+newconn = sqlite3.connect(new_path)
+for row in SAVED_update_mods_result:
+    if row not in SAVED_base_mods_result:
+        
+        idid = row[0]
+        pdxId = row[1]
+        steamId = row[2]
+        gameRegistryId = row[3]
+        name = row[4]
+        displayName = row[5]
+        description = row[6]
+        thumbnailUrl = row[7]
+        thumbnailPath = row[8]
+        version = row[9]
+        tags = row[10]
+        requiredVersion = row[11]
+        arch = row[12]
+        os = row[13]
+        repositoryPath = row[14]
+        dirPath = row[15]
+        archivePath = row[16]
+        status = row[17]
+        source = row[18]
+        cause = row[19]
+        timeUpdated = row[20]
+        isNew = row[21]
+        createdDate = row[22]
+        subscribedDate = row[23]
+        size = row[24]        
+
+
+        values = f"({'idid'}, {'pdxId'}, {'steamId'}, {'gameRegistryId'}, {'name'}, {'displayName'}, {'description'}, {'thumbnailUrl'}, {'thumbnailPath'}, {'version'}, {'tags'}, {'requiredVersion'},{'arch'}, {'os'}, {'repositoryPath'}, {'dirPath'}, {'archivePath'}, {'status'}, {'source'}, {'cause'}, {'timeUpdated'}, {'isNew'}, {'createdDate'}, {'subscribedDate'}, {'size'})"
+        default = "(id, pdxId, steamId, gameRegistryId, name, displayName, description , thumbnailUrl ,thumbnailPath , version , tags , requiredVersion , arch , os , repositoryPath , dirPath , archivePath , status , source , cause , timeUpdated , isNew , createdDate , subscribedDate , size )"
+        updated = newconn.execute("INSERT INTO mods " + default + " VALUES " + values)
+
+
+
+                        
+newconn.commit()
+newconn.close()
+
+print("\n DONE MODS ")
+
+
